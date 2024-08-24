@@ -48,13 +48,17 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       let user = await User.findOne({ email });
   
       if (!user) {
-        throw new Error("Email not found");
+        throw new Error("Invalid email or password.");
       }
   
       if (await user.comparePassword(password)) {
 const token =  await user.generateJWT();
-
-        return res.status(201).json({
+res.cookie("auth_token",token,{
+  httpOnly:true,
+  secure:false,
+  maxAge:86400000,
+})
+         res.status(200).json({
           _id: user?._id,
           name: user?.name,
           surname: user?.surname,
@@ -71,7 +75,15 @@ const token =  await user.generateJWT();
     }
   };
 
+const validateToken=async(req:Request,res:Response,next:NextFunction)=>{
 
+try{
+res.status(200).json("OK")
+}catch(error){
+  console.log(error);
+  next(error)
+}
+}
 
 
 
@@ -79,4 +91,5 @@ const token =  await user.generateJWT();
 export const authController ={
     register,
     login,
+    validateToken,
 }
