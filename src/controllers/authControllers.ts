@@ -59,7 +59,7 @@ res.cookie("auth_token",token,{
   maxAge:86400000,
 })
          res.status(200).json({
-          _id: user?._id,
+          token:token,
           name: user?.name,
           surname: user?.surname,
           email: user.email,
@@ -78,7 +78,11 @@ res.cookie("auth_token",token,{
 const validateToken=async(req:Request,res:Response,next:NextFunction)=>{
 
 try{
-res.status(200).json("OK")
+
+const user = await User.findById({_id:req?.user?.userId}).select(["-password","-createdAt","-updatedAt","-_id"])
+
+
+res.status(200).json(user)
 }catch(error){
   console.log(error);
   next(error)
