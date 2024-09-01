@@ -51,6 +51,7 @@ const getAllArticles = async (
         "-createdBy",
         "-verifiedBy",
         "-createdAt",
+        "-viewsCounter",
         "-__v",
       ])
       .populate([{ path: "tags", select: ["name"] }])
@@ -75,7 +76,56 @@ const getAllArticles = async (
   }
 };
 
+const getArticle = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const article = await Article.findOne({ _id: id }).populate([
+      { path: "tags", select: ["name"] },
+      { path: "verifiedBy", select: ["name", "surname"] },
+      { path: "createdBy", select: ["name", "surname"] },
+    ]);
+
+    if (!article) {
+      return res.status(403).json({ message: "Article not found" });
+    }
+
+    res.status(200).json(article);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+const IncrementViewsCounter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const article = await Article.findOne({ _id: id });
+
+    if (!article) {
+      return res.status(403).json({ message: "Article not found" });
+    }
+
+    article.viewsCounter += 1;
+    await article.save();
+
+    res.status(200).json();
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 export const articleController = {
   createArticle,
   getAllArticles,
+  getArticle,
+  IncrementViewsCounter,
 };
