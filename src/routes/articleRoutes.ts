@@ -6,5 +6,11 @@ const router = express.Router();
 
 router.post("/create", authGuard, articleController.createArticle);
 router.get("/", authGuard, articleController.getAllArticles);
+router.get("/article/:id", authGuard, articleController.getArticle);
+router.post(
+  "/article/:id/increment-views",
+  authGuard,
+  articleController.IncrementViewsCounter
+);
 
 export default router;

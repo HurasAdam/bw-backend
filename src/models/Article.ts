@@ -10,6 +10,7 @@ const articleSchema = new Schema(
 
     isVerified: { type: Boolean, required: true, default: false },
     verifiedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    viewsCounter: { type: Number, default: 0 },
   },
 
   { timestamps: true }
