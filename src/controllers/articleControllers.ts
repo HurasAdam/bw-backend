@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Article from "../models/Article";
+import User from "../models/User";
 const createArticle = async (
   req: Request,
   res: Response,
@@ -123,9 +124,43 @@ const IncrementViewsCounter = async (
   }
 };
 
+const getFavouriteArticles = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const currentUser = req.user;
+    const pageSize = 15;
+    const pageNumber = parseInt(
+      req.query.page ? req.query.page.toString() : "1"
+    );
+    const skipp = (pageNumber - 1) * pageSize;
+
+    const user = await User.findById({ _id: currentUser?.userId }).select([
+      "favourites",
+    ]);
+
+    if (!user) {
+      return res.status(403).json({ message: "User not found" });
+    }
+
+    console.log(user);
+
+    // const favorites = user?.favourites;
+    // const favoritesList = await Article.find({ _id: { $in:favorites } });
+
+    res.status(200).json("favorites");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 export const articleController = {
   createArticle,
   getAllArticles,
   getArticle,
   IncrementViewsCounter,
+  getFavouriteArticles,
 };
