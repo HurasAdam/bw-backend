@@ -131,28 +131,43 @@ const getFavouriteArticles = async (
 ) => {
   try {
     const currentUser = req.user;
-    const pageSize = 15;
-    const pageNumber = parseInt(
-      req.query.page ? req.query.page.toString() : "1"
-    );
-    const skipp = (pageNumber - 1) * pageSize;
+    const pageSize = 15; // Liczba wyników na stronę
+    const pageNumber = parseInt(req.query.page ? req.query.page.toString() : "1");
+    const skip = (pageNumber - 1) * pageSize;
 
-    const user = await User.findById({ _id: currentUser?.userId }).select([
-      "favourites",
-    ]);
+    // Znalezienie użytkownika na podstawie ID i pobranie ulubionych artykułów
+    const user = await User.findById(currentUser?.userId).select("favourites");
 
     if (!user) {
       return res.status(403).json({ message: "User not found" });
     }
 
-    console.log(user);
+    // Wyciągnięcie tablicy ID artykułów z ulubionych
+    const favourites = user.favourites;
 
-    // const favorites = user?.favourites;
-    // const favoritesList = await Article.find({ _id: { $in:favorites } });
+    // Pobranie artykułów na podstawie ID w ulubionych z paginacją
+    const favouriteArticles = await Article.find({ _id: { $in: favourites } }).select([
+      "-clientDescription",
+      "-employeeDescription",
+      "-createdBy",
+      "-verifiedBy",
+      "-createdAt",
+      "-viewsCounter",
+      "-__v",
+    ]).populate([{ path: "tags", select: ["name"] }])
+      .skip(skip)
+      .limit(pageSize);
 
-    res.status(200).json("favorites");
+    // Jeśli chcesz, możesz również zwrócić całkowitą liczbę ulubionych artykułów, aby obsłużyć paginację na froncie
+    const totalFavouriteArticles = await Article.countDocuments({ _id: { $in: favourites } });
+
+    res.status(200).json({
+      data:favouriteArticles,
+      currentPage: pageNumber,
+      totalPages: Math.ceil(totalFavouriteArticles / pageSize),
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     next(error);
   }
 };
