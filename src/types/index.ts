@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface IUserDocument extends IUser, Document {
   generateJWT(): Promise<string>;
   comparePassword(password: string): Promise<boolean>;
@@ -16,4 +18,5 @@ export interface IUser {
   isAdmin: boolean;
   avatar: string;
   team: string;
+  favourites: Types.ObjectId[];  // Dodaj tę linię, aby zdefiniować favourites
 }
