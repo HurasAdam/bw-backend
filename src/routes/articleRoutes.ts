@@ -12,6 +12,12 @@ router.post(
   authGuard,
   articleController.IncrementViewsCounter
 );
+
+router.put(
+  "/article/edit/:id",
+  authGuard,
+  articleController.updateArticle
+);
 router.get("/favourites", authGuard, articleController.getFavouriteArticles);
 
 export default router;

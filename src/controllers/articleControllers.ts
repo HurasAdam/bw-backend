@@ -172,10 +172,56 @@ const getFavouriteArticles = async (
   }
 };
 
+
+
+
+const updateArticle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+    const { title, clientDescription, employeeDescription, verifiedBy, tags } =
+    req.body;
+console.log(req.body)
+    const article = await Article.findOne({ _id: id });
+
+    if (!article) {
+      return res.status(403).json({ message: "Article not found" });
+    }
+    article.title = title || article.title
+    article.clientDescription = clientDescription || article.clientDescription
+    article.employeeDescription = employeeDescription || article.employeeDescription
+    article.tags = tags || article.tags
+
+ const updatedArticle = await article.save();
+
+ if(updatedArticle){
+  res.status(200).json(updatedArticle);
+ }
+   
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+
+
+
+
+
+
+
+
+
 export const articleController = {
   createArticle,
   getAllArticles,
   getArticle,
   IncrementViewsCounter,
   getFavouriteArticles,
+  updateArticle
 };
