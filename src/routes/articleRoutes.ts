@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post("/create", authGuard, articleController.createArticle);
 router.get("/", authGuard, articleController.getAllArticles);
+router.get("/search", authGuard, articleController.searchArticleByFilters);
 router.get("/article/:id", authGuard, articleController.getArticle);
 router.post(
   "/article/:id/increment-views",
