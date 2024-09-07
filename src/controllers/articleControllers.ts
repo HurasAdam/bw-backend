@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Article from "../models/Article";
 import User from "../models/User";
+import { constructSearchQuery } from "../utils";
 const createArticle = async (
   req: Request,
   res: Response,
@@ -39,13 +40,17 @@ const getAllArticles = async (
   next: NextFunction
 ) => {
   try {
+
+    const query = constructSearchQuery(req.query);
+
+
     const pageSize = 15;
     const pageNumber = parseInt(
       req.query.page ? req.query.page.toString() : "1"
     );
     const skipp = (pageNumber - 1) * pageSize;
-
-    const articles = await Article.find({})
+    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : '-createdAt';
+    const articles = await Article.find(query)
       .select([
         "-clientDescription",
         "-employeeDescription",
@@ -57,9 +62,10 @@ const getAllArticles = async (
       ])
       .populate([{ path: "tags", select: ["name"] }])
       .skip(skipp)
-      .limit(pageSize);
+      .limit(pageSize)
+      .sort(sortBy); 
 
-    const total = await Article.countDocuments();
+    const total = await Article.countDocuments(query);
 
     const responseObject = {
       data: articles,
@@ -209,7 +215,27 @@ console.log(req.body)
 };
 
 
+const searchArticleByFilters = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+const query = constructSearchQuery(req.query);
 
+const filteredArticles = await Article.find(query)
+
+
+  res.status(200).json(filteredArticles);
+ 
+   
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
 
 
@@ -223,5 +249,6 @@ export const articleController = {
   getArticle,
   IncrementViewsCounter,
   getFavouriteArticles,
-  updateArticle
+  updateArticle,
+  searchArticleByFilters
 };
