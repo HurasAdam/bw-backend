@@ -237,6 +237,35 @@ const filteredArticles = await Article.find(query)
   }
 };
 
+const verifyArticle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+    const {isVerified} = req.body;
+
+    const article = await Article.findOne({ _id: id });
+
+    if (!article) {
+      return res.status(403).json({ message: "Article not found" });
+    }
+
+    article.isVerified = isVerified
+    await article.save();
+
+    const verified = isVerified === true;
+    const unverified = isVerified ===true;
+
+    res.status(200).json({message:`${isVerified ? "Artukuł został zweryfikowany" : "Artykuł został oznaczony jako do weryfikacji"}`});
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 
 
 
@@ -250,5 +279,6 @@ export const articleController = {
   IncrementViewsCounter,
   getFavouriteArticles,
   updateArticle,
-  searchArticleByFilters
+  searchArticleByFilters,
+  verifyArticle
 };
