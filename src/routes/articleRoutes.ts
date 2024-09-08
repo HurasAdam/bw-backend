@@ -20,5 +20,5 @@ router.put(
   articleController.updateArticle
 );
 router.get("/favourites", authGuard, articleController.getFavouriteArticles);
-
+router.post("/article/:id/verify",authGuard, articleController.verifyArticle);
 export default router;
