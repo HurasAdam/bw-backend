@@ -98,7 +98,15 @@ const getArticle = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(403).json({ message: "Article not found" });
     }
 
-    res.status(200).json(article);
+    const isFavorite = user?.favourites.includes(article._id);
+
+    const responseObj = {
+      ...article.toObject(), // Konwertujemy dokument Mongoose na obiekt JavaScript
+      isFavourite: isFavorite || false, // Dodajemy nowe pole isFavourite
+    };
+
+
+    res.status(200).json(responseObj);
   } catch (error) {
     console.log(error);
     next(error);
@@ -256,9 +264,6 @@ const verifyArticle = async (
     article.isVerified = isVerified
     await article.save();
 
-    const verified = isVerified === true;
-    const unverified = isVerified ===true;
-
     res.status(200).json({message:`${isVerified ? "Artukuł został zweryfikowany" : "Artykuł został oznaczony jako do weryfikacji"}`});
   } catch (error) {
     console.log(error);
@@ -266,7 +271,45 @@ const verifyArticle = async (
   }
 };
 
+const markArticleAsFavorite = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+const user = await User.findById({_id:req.user?.userId});
 
+    if (!user) {
+      return res.status(401).json({ message: "Użytkownik nie zalogowany" });
+    }
+
+    const article = await Article.findOne({ _id: id });
+
+    if (!article) {
+      return res.status(403).json({ message: "Article not found" });
+    }
+
+const isFavorite = user?.favourites.includes(article._id);
+
+if (isFavorite) {
+
+  user.favourites = user?.favourites.filter(
+    (favoriteId) => favoriteId.toString() !== article._id.toString()
+  );
+}else {
+ 
+  user.favourites.push(article._id);
+}
+
+await User.findByIdAndUpdate(req.user?.userId, { favourites: user.favourites });
+
+    res.status(200).json({message:`${isFavorite ? "Usunięto artykuł z listy ulubionych":" Dodano artkuł do listy ulubionych"}`});
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
 
 
@@ -280,5 +323,6 @@ export const articleController = {
   getFavouriteArticles,
   updateArticle,
   searchArticleByFilters,
-  verifyArticle
+  verifyArticle,
+  markArticleAsFavorite
 };

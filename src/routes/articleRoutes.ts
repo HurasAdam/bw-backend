@@ -21,4 +21,5 @@ router.put(
 );
 router.get("/favourites", authGuard, articleController.getFavouriteArticles);
 router.post("/article/:id/verify",authGuard, articleController.verifyArticle);
+router.post("/article/:id/add-favourite",authGuard, articleController.markArticleAsFavorite)
 export default router;
