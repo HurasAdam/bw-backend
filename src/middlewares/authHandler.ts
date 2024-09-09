@@ -2,6 +2,7 @@ import { NextFunction,Request,Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 import * as types from "../types/index";
+import { Types } from "mongoose";
 
 declare global {
     namespace Express {
@@ -13,6 +14,7 @@ declare global {
           isAdmin: boolean;
           userId: string;
           avatar?: string;
+          favourites:Types.ObjectId[]
         };
       }
     }
@@ -39,7 +41,8 @@ declare global {
             email:user.email,
             surname:user?.surname,
             isAdmin:user.isAdmin,
-            userId:id
+            userId:id,
+            favourites:user?.favourites
         }
         next();
     }
