@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
 import Article from "../models/Article";
 import User from "../models/User";
 import { constructSearchQuery } from "../utils";
@@ -271,6 +272,8 @@ const verifyArticle = async (
   }
 };
 
+
+
 const markArticleAsFavorite = async (
   req: Request,
   res: Response,
@@ -312,6 +315,42 @@ await User.findByIdAndUpdate(req.user?.userId, { favourites: user.favourites });
 };
 
 
+const deleteArticle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+const {id} =req.params;
+
+const article = await Article.findById({_id:id});
+
+if(!article){
+  return res.status(403).json({message:"Article not found"});
+}
+
+const deletedArticle = true
+
+if(deletedArticle){
+
+    await User.updateMany(
+    { favourites: new mongoose.Types.ObjectId(id) }, 
+    { $pull: { favourites: new mongoose.Types.ObjectId(id) } } 
+  );
+
+  return res.status(200).json({message:"Artykuł został usunięty"})
+
+
+
+}else{
+  return res.status(400).json({message:"Wystąpił nieoczekiwany błąd, spróbuj ponownie"})
+}
+
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
 
 
@@ -324,5 +363,6 @@ export const articleController = {
   updateArticle,
   searchArticleByFilters,
   verifyArticle,
-  markArticleAsFavorite
+  markArticleAsFavorite,
+  deleteArticle
 };
