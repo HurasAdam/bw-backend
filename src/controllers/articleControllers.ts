@@ -322,14 +322,17 @@ const deleteArticle = async (
 ) => {
   try {
 const {id} =req.params;
-
+console.log("USUWANT ARTYKUL")
+console.log(id)
 const article = await Article.findById({_id:id});
 
 if(!article){
   return res.status(403).json({message:"Article not found"});
 }
 
-const deletedArticle = true
+
+
+const deletedArticle = await Article.findByIdAndDelete({_id:id});
 
 if(deletedArticle){
 
