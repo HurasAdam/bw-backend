@@ -2,6 +2,7 @@ import {model,Schema} from "mongoose";
 
 const tagSchema = new Schema({
     name:{type:String, required:true},
+    shortname:{type:String,required:true}
     
 });
 
