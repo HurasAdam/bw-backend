@@ -61,7 +61,7 @@ const getAllArticles = async (
         "-viewsCounter",
         "-__v",
       ])
-      .populate([{ path: "tags", select: ["name"] }])
+      .populate([{ path: "tags", select: ["name","shortname"] }])
       .skip(skipp)
       .limit(pageSize)
       .sort(sortBy); 
