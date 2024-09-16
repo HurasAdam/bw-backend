@@ -1,5 +1,6 @@
 import express from "express";
 import authRoutes from "./authRoutes";
+import userRoutes from "./userRoutes";
 import tagRoutes from "./tagRoutes";
 import articleRoutes from "./articleRoutes";
 import conversationTopicRoutes from "./conversationTopicRoutes";
@@ -8,6 +9,7 @@ const router = express.Router();
 
 
 router.use("/auth",authRoutes);
+router.use("/user",userRoutes);
 router.use("/tags",tagRoutes);
 router.use("/articles",articleRoutes);
 router.use("/conversation-topics",conversationTopicRoutes);
