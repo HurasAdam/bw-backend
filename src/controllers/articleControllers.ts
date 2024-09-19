@@ -55,13 +55,12 @@ const getAllArticles = async (
       .select([
         "-clientDescription",
         "-employeeDescription",
-        "-createdBy",
         "-verifiedBy",
-        "-createdAt",
+        "-updatedAt",
         "-viewsCounter",
         "-__v",
       ])
-      .populate([{ path: "tags", select: ["name","shortname"] }])
+      .populate([{ path: "tags", select: ["name","shortname"] },{path:"createdBy",select:["name","surname"]}])
       .skip(skipp)
       .limit(pageSize)
       .sort(sortBy); 
