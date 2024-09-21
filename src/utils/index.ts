@@ -16,7 +16,9 @@ export const constructSearchQuery = (queryParams: any) => {
       };
     }
  
-  
+    if (queryParams.author) {
+      constructedQuery.createdBy = queryParams.author;
+    }
 
   
     return constructedQuery;
