@@ -20,6 +20,10 @@ export const constructSearchQuery = (queryParams: any) => {
       constructedQuery.createdBy = queryParams.author;
     }
 
+    if (queryParams.verified) {
+      constructedQuery.isVerified = queryParams.verified;
+    }
   
     return constructedQuery;
   };
+
