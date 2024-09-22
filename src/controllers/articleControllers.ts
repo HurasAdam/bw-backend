@@ -45,7 +45,8 @@ const getAllArticles = async (
     const query = constructSearchQuery(req.query);
 
 
-    const pageSize = 20;
+    const limit = parseInt(req.query.limit?.toString() || "20")
+const pageSize = limit;
     const pageNumber = parseInt(
       req.query.page ? req.query.page.toString() : "1"
     );
