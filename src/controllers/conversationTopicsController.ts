@@ -49,8 +49,40 @@ res.status(200).json(topics);
   };
 
 
+
+  const deleteConversationTopic= async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {id}= req.params;
+
+const topic = await ConversationTopic.findById({_id:id});
+
+
+
+if(!topic){
+    return res.status(400).json({message:"Conversation topic not found"});
+};
+
+const deletedTopic = await ConversationTopic.findByIdAndDelete({_id:id});
+
+if(deletedTopic){
+    return res.status(200).json({message:"Temat rozmowy został usunięty"})
+}
+  
+  }catch(error){
+    console.log(error);
+    next(error);
+}
+}
+
+
+
+
+
+
+
   
 export const conversationTopicController = {
   createConversationTopic,
-  getAllTopics
+  getAllTopics,
+  deleteConversationTopic
 };

@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post("/create",conversationTopicController.createConversationTopic);
 router.get("/",conversationTopicController.getAllTopics);
+router.delete("/delete/:id",conversationTopicController.deleteConversationTopic);
 
 
 export default router;
