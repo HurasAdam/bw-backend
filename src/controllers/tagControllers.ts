@@ -66,8 +66,38 @@ if(updatedTag){
 };
 
 
+
+const deleteTag= async(req:Request,res:Response,next:NextFunction)=>{
+    try{
+        const {id}= req.params;
+
+const tag = await Tag.findById({_id:id});
+
+
+
+if(!tag){
+    return res.status(400).json({message:"Tag not found"});
+};
+
+const deletedTag = await Tag.findByIdAndDelete({_id:id});
+
+if(deletedTag){
+    return res.status(200).json({message:"Tag został usunięty"})
+}
+
+
+
+
+    }catch(error){
+        console.log(error);
+        next(error);
+    }
+};
+
+
 export const tagController ={
     createTag,
     getAllTags,
-    updateTag
+    updateTag,
+    deleteTag
 }

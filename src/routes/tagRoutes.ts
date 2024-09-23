@@ -8,6 +8,7 @@ const router = express.Router();
 router.post("/create",tagController.createTag);
 router.get("/",tagController.getAllTags);
 router.put("/edit/:id",tagController.updateTag);
+router.delete("/delete/:id",tagController.deleteTag);
 
 
 export default router;
